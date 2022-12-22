@@ -69,8 +69,8 @@ public class TaskController {
         var task = taskService.get(id);
         if (!task.isManageableBy(user))
             throw new AccessDeniedException("You are not allowed to manage this task.");
-        if (data.assignee() != null && task.isManageableBy(user) && !data.assignee().equals(user.getUsername()))
-            throw new AccessDeniedException("You cannot change this task's assignee.");
+        if (data.assignee() != null && !data.assignee().equals(user.getUsername()) && task.isManageableBy(user))
+            throw new AccessDeniedException("You are not allowed to assign someone else.");
         var updated = taskService.update(
                 task,
                 data.title(),
