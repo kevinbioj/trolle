@@ -31,7 +31,6 @@ public class TaskEntity {
     // ---
 
     @Id
-    @Column(columnDefinition = "UUID")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 

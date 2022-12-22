@@ -9,7 +9,7 @@ CREATE TABLE user (
 );
 
 CREATE TABLE project (
-    id UUID NOT NULL DEFAULT UUID(),
+    id BINARY(16) NOT NULL DEFAULT UUID(),
     name VARCHAR(64) UNIQUE NOT NULL,
     is_public BOOLEAN NOT NULL DEFAULT FALSE,
     owner_id INT NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE project (
 CREATE TABLE `column` (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(32) NOT NULL,
-    project_id UUID NOT NULL,
+    project_id BINARY(16) NOT NULL,
     CONSTRAINT pk_column PRIMARY KEY (id),
     CONSTRAINT fk_column_project
         FOREIGN KEY (project_id)
@@ -35,7 +35,7 @@ CREATE TABLE `column` (
 
 CREATE TABLE member (
     id INT NOT NULL AUTO_INCREMENT,
-    project_id UUID NOT NULL,
+    project_id BINARY(16) NOT NULL,
     user_id INT NOT NULL,
     joined_at TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT pk_member
@@ -51,10 +51,10 @@ CREATE TABLE member (
 );
 
 CREATE TABLE task (
-    id UUID NOT NULL DEFAULT UUID(),
+    id BINARY(16) NOT NULL DEFAULT UUID(),
     title VARCHAR(32) NOT NULL,
     description TEXT,
-    project_id UUID NOT NULL,
+    project_id BINARY(16) NOT NULL,
     column_id INT NOT NULL,
     assignee_id INT,
     due_date TIMESTAMP,

@@ -25,7 +25,6 @@ public class ProjectEntity {
     // ---
 
     @Id
-    @Column(columnDefinition = "UUID")
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
