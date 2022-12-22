@@ -1,178 +1,216 @@
 import { Carousel } from '@mantine/carousel';
 import {
-  ActionIcon,
   Box,
   Button,
   Card,
   Flex,
-  List,
-  LoadingOverlay,
-  Table,
+  Modal,
   Text,
+  Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
-import { IconPlus, IconTrash } from '@tabler/icons';
 import { useMatch, useNavigate } from '@tanstack/react-location';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export default function ProjectPage() {
-  const { params } = useMatch<{ Params: { id: UUID } }>();
+  const {
+    params: { id },
+  } = useMatch<{ Params: { id: UUID } }>();
   const navigate = useNavigate();
-  const [project, setProject] = useState<Project | null>(null);
+  const project = useQuery({
+    onError: () => navigate({ to: '/' }),
+    queryKey: [`project_${id}`],
+    queryFn: () => api.projects.get(id),
+  });
+  const tasks = useQuery({
+    enabled: project.isSuccess,
+    queryKey: [`project_${id}_tasks`],
+    queryFn: () => api.tasks.fromProject(project.data!.id),
+  });
 
-  useEffect(() => {
-    api.projects
-      .get(params.id)
-      .then((p) => setProject(p))
-      .catch(() => navigate({ to: '/' }));
-  }, []);
+  return project.data && tasks.data ? (
+    <ProjectView project={project.data} tasks={tasks.data} />
+  ) : null;
+}
 
-  if (!project) return <LoadingOverlay visible />;
+type ProjectViewProps = { project: Project; tasks: Task[] };
+function ProjectView({ project, tasks }: ProjectViewProps) {
+  const [openedTask, setOpenedTask] = useState<Task | null>(null);
   return (
     <>
       <Title align="center" order={1} weight="normal">
         {project.name}
       </Title>
-      <Box component="section" my="xl">
-        <Title mb="sm" order={2} weight="normal">
-          Tâches en cours
-        </Title>
-        <Carousel align="start" dragFree h={500} slideGap="md" slideSize="auto">
-          {project.columns.map((column) => (
-            <Carousel.Slide key={`column_${column.id}`} w={250}>
-              <ProjectColumn column={column} />
-            </Carousel.Slide>
-          ))}
-        </Carousel>
-      </Box>
-      <ProjectDetails project={project} />
-      <ProjectMembers project={project} />
+      <ProjectDetails owner={project.owner} createdAt={project.createdAt} />
+      <ProjectTasks
+        columns={project.columns}
+        onTaskOpen={setOpenedTask}
+        tasks={tasks}
+      />
+      {openedTask && (
+        <TaskModal
+          onClose={() => setOpenedTask(null)}
+          project={project}
+          task={openedTask}
+        />
+      )}
     </>
   );
 }
 
-function ProjectColumn({ column }: { column: Column }) {
+type ProjectDetailsProps = { owner: User; createdAt: string };
+function ProjectDetails({ owner, createdAt }: ProjectDetailsProps) {
+  return <></>;
+}
+
+type ProjectTasksProps = {
+  columns: Column[];
+  onTaskOpen: (task: Task) => void;
+  tasks: Task[];
+};
+function ProjectTasks({ columns, onTaskOpen, tasks }: ProjectTasksProps) {
+  return (
+    <Box component="section" my="xl">
+      <Carousel align="start" dragFree h={500} slideGap="md" slideSize="auto">
+        {columns.map((column) => {
+          const columnTasks = tasks.filter((t) => t.column.id === column.id);
+          return (
+            <Carousel.Slide key={`column_${column.id}`} w={250}>
+              <ColumnView
+                column={column}
+                onTaskOpen={onTaskOpen}
+                tasks={columnTasks}
+              />
+            </Carousel.Slide>
+          );
+        })}
+      </Carousel>
+    </Box>
+  );
+}
+
+type ColumnViewProps = {
+  column: Column;
+  onTaskOpen: (task: Task) => void;
+  tasks: Task[];
+};
+function ColumnView({ column, onTaskOpen, tasks }: ColumnViewProps) {
   return (
     <Card h={500} shadow="sm" withBorder>
-      <Title align="center" order={3} weight="lighter">
+      <Title align="center" mb="md" order={3} weight="lighter">
         {column.name}
       </Title>
+      <Flex direction="column">
+        {tasks.length > 0 ? (
+          tasks.map((task) => (
+            <Card
+              key={`task_${task.id}`}
+              onClick={() => onTaskOpen(task)}
+              shadow="md"
+              withBorder
+              sx={{
+                ':hover': {
+                  cursor: 'pointer',
+                },
+              }}
+            >
+              <Title align="center" order={4} weight="normal">
+                {task.title}
+              </Title>
+            </Card>
+          ))
+        ) : (
+          <Text align="center" color="dimmed">
+            Aucune tâche n&apos;existe dans cette colonne.
+          </Text>
+        )}
+      </Flex>
     </Card>
   );
 }
 
-function ProjectDetails({ project }: { project: Project }) {
-  return (
-    <Box component="section" my="xl">
-      <Title mb="sm" order={2} weight="normal">
-        Informations du projet
-      </Title>
-      <Text>
-        <Text component="span" weight="bold">
-          Gérant du projet :
-        </Text>{' '}
-        {project.owner.displayName}
-        <br />
-        <Text component="span" weight="bold">
-          Date de création :
-        </Text>{' '}
-        {dayjs(project.createdAt).format('LLLL')}
-      </Text>
-    </Box>
-  );
-}
-
-const ERROR_MESSAGES: Record<string, string> = {
-  MEMBER_ALREADY_EXISTS: 'Utilisateur déjà dans le projet.',
-  USER_NOT_FOUND: 'Utilisateur introuvable.',
-  DEFAULT: 'Erreur interne.',
-};
-
-function ProjectMembers({ project }: { project: Project }) {
+type TaskModalProps = { onClose: () => void; project: Project; task: Task };
+function TaskModal({ onClose, project, task }: TaskModalProps) {
   const { user } = useAuth();
-  const form = useForm({ initialValues: { username: '' } });
-  const [members, setMembers] = useState<Member[] | null>(null);
-
-  const getMembers = () =>
-    api.members
-      .get(project.id)
-      .then((m) => setMembers(m))
-      .catch(() => void 0);
-  const addMember = (username: string) =>
-    api.members.add(project.id, username).then(() => getMembers());
-  const removeMember = (username: string) =>
-    api.members.remove(project.id, username).then(() => getMembers());
+  const form = useForm({
+    initialValues: {
+      title: task.title,
+      description: task.description,
+      assignee: task.assignee?.user?.username ?? '',
+      dueDate: task.dueDate ? new Date(task.dueDate) : null,
+    },
+  });
+  const queryClient = useQueryClient();
 
   const handleSubmit = () =>
-    addMember(form.values.username)
-      .then(() => form.setFieldValue('username', ''))
-      .catch((e: APIError) =>
-        form.setFieldError(
-          'username',
-          ERROR_MESSAGES[e.title] ?? ERROR_MESSAGES.DEFAULT,
-        ),
-      );
-
-  useEffect(() => void getMembers(), []);
+    api.tasks
+      .update(task.id, {
+        title: form.values.title,
+        description: form.values.description ?? '',
+        assignee: form.values.assignee || null,
+        dueDate: form.values.dueDate?.toISOString() || null,
+      })
+      .then(() => {
+        queryClient.invalidateQueries([`project_${project.id}_tasks`]);
+        onClose();
+      });
+  const editable = user !== null && project.owner.username === user.username;
 
   return (
-    <Box component="section" my="xl">
-      <Title mb="sm" order={2} weight="normal">
-        Membres du projet
-      </Title>
-      <Table my="lg">
-        <thead>
-          <tr>
-            <th>Pseudonyme</th>
-            <th>Nom public</th>
-            <th>Date d&apos;arrivée</th>
-            {project.owner.username === user?.username ? <th>Action</th> : null}
-          </tr>
-        </thead>
-        <tbody>
-          {members
-            ? members.map((m) => (
-                <tr key={`M-${m.user.username}`}>
-                  <td>{m.user.username}</td>
-                  <td>{m.user.displayName}</td>
-                  <td>{dayjs(m.joinedAt).format('DD/MM/YYYY HH:mm')}</td>
-                  {project.owner.username === user?.username ? (
-                    <td>
-                      {project.owner.username === m.user.username ? (
-                        <Text color="dimmed">Vous</Text>
-                      ) : (
-                        <ActionIcon
-                          aria-label="Supprimer le membre"
-                          color="red"
-                          onClick={() => removeMember(m.user.username)}
-                          title="Supprimer le membre"
-                        >
-                          <IconTrash size={18} />
-                        </ActionIcon>
-                      )}
-                    </td>
-                  ) : null}
-                </tr>
-              ))
-            : null}
-        </tbody>
-      </Table>
+    <Modal
+      centered
+      closeButtonLabel="Fermer la tâche"
+      onClose={onClose}
+      opened={!!task}
+      title={`${task.title} - Édition`}
+      withCloseButton
+    >
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Flex align="stretch" justify="end">
-          <TextInput
-            placeholder="jdupont"
-            {...form.getInputProps('username')}
-          />
-          <ActionIcon color="green" size="lg" type="submit" variant="filled">
-            <IconPlus size={18} />
-          </ActionIcon>
-        </Flex>
+        <TextInput
+          disabled={!editable}
+          label="Titre"
+          mb="md"
+          placeholder="Titre de la tâche"
+          required
+          {...form.getInputProps('title')}
+        />
+        <Textarea
+          disabled={!editable}
+          label="Description"
+          mb="md"
+          {...form.getInputProps('description')}
+        />
+        <TextInput
+          disabled={
+            task.assignee?.user.username === user?.username || !editable
+          }
+          label="Affectée à"
+          mb="md"
+          placeholder="jdupont"
+          {...form.getInputProps('assignee')}
+        />
+        <DatePicker
+          disabled={!editable}
+          label="Date limite de réalisation"
+          locale="fr"
+          mb="md"
+          {...form.getInputProps('dueDate')}
+        />
+        <Button disabled={!editable} fullWidth mb="md" type="submit">
+          Mettre à jour
+        </Button>
       </form>
-    </Box>
+      <Text align="center" color="dimmed">
+        Dernière mise à jour il y a {dayjs(task.updatedAt).toNow(true)}.<br />
+        Crée le {dayjs(task.createdAt).format('LLLL')}.
+      </Text>
+    </Modal>
   );
 }

@@ -1,5 +1,6 @@
 import type { Route } from '@tanstack/react-location';
 import { AuthGuard, GuestGuard } from 'core/guards';
+import CreateProjectPage from './CreateProjectPage';
 import HomePage from './HomePage';
 import LoginPage from './LoginPage';
 import ProfilePage from './ProfilePage';
@@ -31,6 +32,10 @@ export default [
         <RegisterPage />
       </GuestGuard>
     ),
+  },
+  {
+    path: '/projects/create',
+    element: <CreateProjectPage />,
   },
   {
     path: '/projects/:id',

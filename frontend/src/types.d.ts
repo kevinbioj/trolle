@@ -33,7 +33,10 @@ interface Task {
   description: string | null;
   project: Pick<Project, 'id' | 'name'>;
   assignee: Member | null;
-  columnId: Id;
+  column: {
+    id: Id;
+    name: string;
+  };
   dueDate: string | null;
   updatedAt: string;
   createdAt: string;

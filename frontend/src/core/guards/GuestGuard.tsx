@@ -3,7 +3,6 @@ import { useAuth } from 'core/providers';
 import { type ReactNode } from 'react';
 
 export function GuestGuard({ children }: { children: ReactNode }) {
-  const { loading, user } = useAuth();
-  if (loading) return null;
+  const { user } = useAuth();
   return user ? <Navigate to="/login" /> : <>{children}</>;
 }

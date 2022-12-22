@@ -1,8 +1,8 @@
 import api from './_client';
 
-export const get = (username: string) => api<User>(`/users/${username}`);
+export const me = () => api<User>('/users/@me');
 
-export const getMe = () => api<User>('/users/@me');
+export const get = (username: string) => api<User>(`/users/${username}`);
 
 export const register = (
   username: string,
