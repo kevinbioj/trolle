@@ -16,7 +16,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,7 +88,7 @@ public class TaskController {
                         : memberService.get(task.getProject(), userService.get(data.assignee()))
                         : task.getAssignee(),
                 data.dueDate() != null
-                        ? data.dueDate().equals("") ? null : LocalDateTime.parse(data.dueDate())
+                        ? data.dueDate().equals("") ? null : LocalDateTime.from(Instant.parse(data.dueDate()))
                         : task.getDueDate());
         return TaskView.from(updated);
     }
