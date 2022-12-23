@@ -23,9 +23,9 @@ public class TaskService {
     /**
      * Crée une nouvelle tâche dans le projet et la colonne définie.
      *
-     * @param title       Titre de la tâche.
-     * @param project     Projet auquel la tâche est rattachée.
-     * @param column      Colonne dans laquelle la tâche se trouve initialement.
+     * @param title   Titre de la tâche.
+     * @param project Projet auquel la tâche est rattachée.
+     * @param column  Colonne dans laquelle la tâche se trouve initialement.
      */
     public TaskEntity create(String title, ProjectEntity project, ColumnEntity column) {
         var task = TaskEntity.create(title, project, column);
@@ -78,16 +78,11 @@ public class TaskService {
      * @param assignee    Nouvel affecté à la tâche (facultatif).
      */
     public TaskEntity update(TaskEntity task, String title, String description, ColumnEntity column, MemberEntity assignee, LocalDateTime dueDate) {
-        if (title != null)
-            task.setTitle(title);
-        if (description != null)
-            task.setDescription(description);
-        if (column != null)
-            task.setColumn(column);
-        if (assignee != null)
-            task.setAssignee(assignee);
-        if (dueDate != null)
-            task.setDueDate(dueDate);
+        task.setTitle(title);
+        task.setDescription(description);
+        task.setColumn(column);
+        task.setAssignee(assignee);
+        task.setDueDate(dueDate);
         return taskRepository.save(task);
     }
 }

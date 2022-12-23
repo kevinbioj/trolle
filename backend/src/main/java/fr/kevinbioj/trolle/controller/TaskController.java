@@ -69,17 +69,24 @@ public class TaskController {
         var task = taskService.get(id);
         if (!task.isManageableBy(user))
             throw new AccessDeniedException("You are not allowed to manage this task.");
-        if (data.assignee() != null && !data.assignee().equals(user.getUsername()) && task.isManageableBy(user))
+        if (data.assignee() != null
+                && !data.assignee().equals("")
+                && !data.assignee().equals(user.getUsername())
+                && task.isManageableBy(user))
             throw new AccessDeniedException("You are not allowed to assign someone else.");
         var updated = taskService.update(
                 task,
                 data.title(),
                 data.description(),
-                data.columnId() != null ? columnService.get(task.getProject(), data.columnId()) : null,
+                data.columnId() != null ? columnService.get(task.getProject(), data.columnId()) : task.getColumn(),
                 data.assignee() != null
-                        ? memberService.get(task.getProject(), userService.get(data.assignee()))
-                        : null,
-                data.dueDate());
+                        ? data.assignee().equals("")
+                        ? null
+                        : memberService.get(task.getProject(), userService.get(data.assignee()))
+                        : task.getAssignee(),
+                data.dueDate() != null
+                        ? data.dueDate().equals("") ? null : LocalDateTime.parse(data.dueDate())
+                        : task.getDueDate());
         return TaskView.from(updated);
     }
 
@@ -104,6 +111,6 @@ public class TaskController {
                                  @Pattern(regexp = TaskEntity.TITLE_PATTERN) String title,
                                  String assignee,
                                  Integer columnId,
-                                 LocalDateTime dueDate) {
+                                 String dueDate) {
     }
 }
