@@ -14,8 +14,8 @@ import {
 import { DatePicker } from '@mantine/dates';
 import { useForm, yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
-import { IconTool, IconTrash } from '@tabler/icons';
-import { useMatch, useNavigate } from '@tanstack/react-location';
+import { IconTool, IconTrash, IconUsers } from '@tabler/icons';
+import { Link, useMatch, useNavigate } from '@tanstack/react-location';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateTaskModal } from 'components/CreateTaskModal';
 import { ProjectSettingsModal } from 'components/ProjectSettingsModal';
@@ -59,12 +59,21 @@ function ProjectView({ project, tasks }: ProjectViewProps) {
           {project.name}
         </Title>
         {isOwner && (
-          <Button
-            leftIcon={<IconTool size={16} />}
-            onClick={() => setOpenedSettings(true)}
-          >
-            Éditer le projet
-          </Button>
+          <Flex gap="sm">
+            <Button
+              component={Link}
+              leftIcon={<IconUsers size={16} />}
+              to={`/projects/${project.id}/members`}
+            >
+              Gestion des membres
+            </Button>
+            <Button
+              leftIcon={<IconTool size={16} />}
+              onClick={() => setOpenedSettings(true)}
+            >
+              Éditer le projet
+            </Button>
+          </Flex>
         )}
       </Flex>
       <ProjectDetails owner={project.owner} createdAt={project.createdAt} />

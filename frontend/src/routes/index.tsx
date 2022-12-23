@@ -7,6 +7,7 @@ import LoginPage from './LoginPage';
 import ProfilePage from './ProfilePage';
 import ProjectPage from './ProjectPage';
 import RegisterPage from './RegisterPage';
+import MembersPage from './MembersPage';
 
 export default [
   { path: '/', element: <HomePage /> },
@@ -40,6 +41,19 @@ export default [
   },
   {
     path: '/projects/:id',
-    element: <ProjectPage />,
+    children: [
+      {
+        path: '/members',
+        element: (
+          <AuthGuard>
+            <MembersPage />
+          </AuthGuard>
+        ),
+      },
+      {
+        path: '/',
+        element: <ProjectPage />,
+      },
+    ],
   },
 ] satisfies Route[];
