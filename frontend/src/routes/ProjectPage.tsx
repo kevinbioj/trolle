@@ -198,8 +198,8 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
   const form = useForm({
     initialValues: {
       title: task.title,
-      description: task.description,
-      assignee: task.assignee?.user?.username ?? '',
+      description: task.description ?? '',
+      assignee: task.assignee?.user?.username ?? null,
       dueDate: task.dueDate ? new Date(task.dueDate) : null,
       column: `${task.column.id}`,
     },
@@ -235,9 +235,9 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
     api.tasks
       .update(task.id, {
         title: form.values.title,
-        description: form.values.description ?? '',
-        assignee: form.values.assignee || '',
-        dueDate: form.values.dueDate?.toISOString() || '',
+        description: form.values.description ?? null,
+        assignee: form.values.assignee || null,
+        dueDate: form.values.dueDate?.toISOString() || null,
         columnId: +form.values.column,
       })
       .then(() => {
