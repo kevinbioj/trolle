@@ -74,8 +74,7 @@ public class ProjectController {
         var project = projectService.create(data.name(), user);
         memberService.create(project, user);
         columnService.create("Stories", project);
-        if (data.columns() != null)
-            data.columns().forEach(c -> columnService.create(c, project));
+        data.columns().forEach(c -> columnService.create(c, project));
         columnService.create("Terminées", project);
         return ProjectView.from(project);
     }
@@ -86,7 +85,9 @@ public class ProjectController {
         var project = projectService.get(id);
         if (!project.isManageableBy(user))
             throw new AccessDeniedException("You are not allowed to manage this project.");
-        var updated = projectService.update(project, data.name(), data.isPublic());
+        var updated = projectService.update(project,
+                data.name() != null ? data.name() : project.getName(),
+                data.isPublic() != null ? data.isPublic() : project.isPublic());
         return ProjectView.from(updated);
     }
 

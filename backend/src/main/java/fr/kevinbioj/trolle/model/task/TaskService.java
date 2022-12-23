@@ -72,10 +72,10 @@ public class TaskService {
      * Met à jour une tâche avec les nouvelles informations fournies.
      *
      * @param task        Tâche à mettre à jour.
-     * @param title       Nouveau titre de la tâche (facultatif).
-     * @param description Nouvelle description de la tâche (facultative).
-     * @param column      Nouvelle colonne de la tâche (facultative).
-     * @param assignee    Nouvel affecté à la tâche (facultatif).
+     * @param title       Nouveau titre de la tâche.
+     * @param description Nouvelle description de la tâche.
+     * @param column      Nouvelle colonne de la tâche.
+     * @param assignee    Nouvel affecté à la tâche.
      */
     public TaskEntity update(TaskEntity task, String title, String description, ColumnEntity column, MemberEntity assignee, LocalDateTime dueDate) {
         task.setTitle(title);

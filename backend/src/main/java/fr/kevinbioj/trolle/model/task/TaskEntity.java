@@ -70,7 +70,7 @@ public class TaskEntity {
     }
 
     public void setDescription(String description) {
-        if (!Pattern.matches(DESCRIPTION_PATTERN, description))
+        if (description != null && !Pattern.matches(DESCRIPTION_PATTERN, description))
             throw new InvalidTaskDescriptionException();
         this.description = description;
     }

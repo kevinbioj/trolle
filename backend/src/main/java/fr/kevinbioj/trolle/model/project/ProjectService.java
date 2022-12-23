@@ -68,16 +68,12 @@ public class ProjectService {
      * Met à jour le projet cible avec les nouvelles informations.
      *
      * @param project  Projet à mettre à jour.
-     * @param name     Nouveau nom du projet (facultatif).
-     * @param isPublic Nouveau statut de visibilité publique du projet (facultatif).
+     * @param name     Nouveau nom du projet.
+     * @param isPublic Nouveau statut de visibilité publique du projet.
      */
     public ProjectEntity update(ProjectEntity project, String name, Boolean isPublic) {
-        if (name != null) {
-            project.setName(name);
-        }
-        if (isPublic != null) {
-            project.setPublic(isPublic);
-        }
+        project.setName(name);
+        project.setPublic(isPublic);
         return projectRepository.save(project);
     }
 }

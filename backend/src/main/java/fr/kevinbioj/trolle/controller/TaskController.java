@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -69,26 +70,15 @@ public class TaskController {
         var task = taskService.get(id);
         if (!task.isManageableBy(user))
             throw new AccessDeniedException("You are not allowed to manage this task.");
-        if (data.assignee() != null
-                && !data.assignee().equals("")
-                && !data.assignee().equals(user.getUsername())
-                && task.isManageableBy(user))
-            throw new AccessDeniedException("You are not allowed to assign someone else.");
         var updated = taskService.update(
                 task,
-                data.title(),
-                data.description(),
+                data.title() != null ? data.title() : task.getTitle(),
+                data.description().isPresent() ? data.description.get() : task.getDescription(),
                 data.columnId() != null ? columnService.get(task.getProject(), data.columnId()) : task.getColumn(),
-                data.assignee() != null
-                        ? data.assignee().equals("")
-                        ? null
-                        : memberService.get(task.getProject(), userService.get(data.assignee()))
+                data.assignee().isPresent()
+                        ? data.assignee().get() != null ? memberService.get(task.getProject(), userService.get(data.assignee().get())) : null
                         : task.getAssignee(),
-                data.dueDate() != null
-                        ? data.dueDate().equals("")
-                        ? null
-                        : LocalDateTime.ofInstant(Instant.parse(data.dueDate()), ZoneId.of("UTC"))
-                        : task.getDueDate());
+                data.dueDate().orElse(task.getDueDate()));
         return TaskView.from(updated);
     }
 
@@ -109,10 +99,10 @@ public class TaskController {
                                  @NotNull Integer columnId) {
     }
 
-    private record UpdateTaskDto(@Pattern(regexp = TaskEntity.DESCRIPTION_PATTERN) String description,
-                                 @Pattern(regexp = TaskEntity.TITLE_PATTERN) String title,
-                                 String assignee,
+    private record UpdateTaskDto(@Pattern(regexp = TaskEntity.TITLE_PATTERN) String title,
+                                 JsonNullable<String> description,
                                  Integer columnId,
-                                 String dueDate) {
+                                 JsonNullable<String> assignee,
+                                 JsonNullable<LocalDateTime> dueDate) {
     }
 }
