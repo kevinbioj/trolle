@@ -5,19 +5,25 @@ import {
   Card,
   Flex,
   Modal,
+  Select,
   Text,
   Textarea,
   TextInput,
   Title,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { useForm } from '@mantine/form';
+import { useForm, yupResolver } from '@mantine/form';
+import { showNotification } from '@mantine/notifications';
+import { IconTool, IconTrash } from '@tabler/icons';
 import { useMatch, useNavigate } from '@tanstack/react-location';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { CreateTaskModal } from 'components/CreateTaskModal';
+import { ProjectSettingsModal } from 'components/ProjectSettingsModal';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
 import dayjs from 'dayjs';
 import { useState } from 'react';
+import * as Yup from 'yup';
 
 export default function ProjectPage() {
   const {
@@ -42,16 +48,30 @@ export default function ProjectPage() {
 
 type ProjectViewProps = { project: Project; tasks: Task[] };
 function ProjectView({ project, tasks }: ProjectViewProps) {
+  const { user } = useAuth();
   const [openedTask, setOpenedTask] = useState<Task | null>(null);
+  const [openedSettings, setOpenedSettings] = useState(false);
+  const isOwner = user?.username === project.owner.username;
   return (
     <>
-      <Title align="center" order={1} weight="normal">
-        {project.name}
-      </Title>
+      <Flex align="center" justify="space-between">
+        <Title order={1} weight="normal">
+          {project.name}
+        </Title>
+        {isOwner && (
+          <Button
+            leftIcon={<IconTool size={16} />}
+            onClick={() => setOpenedSettings(true)}
+          >
+            Éditer le projet
+          </Button>
+        )}
+      </Flex>
       <ProjectDetails owner={project.owner} createdAt={project.createdAt} />
       <ProjectTasks
         columns={project.columns}
         onTaskOpen={setOpenedTask}
+        project={project}
         tasks={tasks}
       />
       {openedTask && (
@@ -59,6 +79,13 @@ function ProjectView({ project, tasks }: ProjectViewProps) {
           onClose={() => setOpenedTask(null)}
           project={project}
           task={openedTask}
+        />
+      )}
+      {openedSettings && (
+        <ProjectSettingsModal
+          close={() => setOpenedSettings(false)}
+          project={project}
+          visible={openedSettings}
         />
       )}
     </>
@@ -73,9 +100,15 @@ function ProjectDetails({ owner, createdAt }: ProjectDetailsProps) {
 type ProjectTasksProps = {
   columns: Column[];
   onTaskOpen: (task: Task) => void;
+  project: Project;
   tasks: Task[];
 };
-function ProjectTasks({ columns, onTaskOpen, tasks }: ProjectTasksProps) {
+function ProjectTasks({
+  columns,
+  onTaskOpen,
+  project,
+  tasks,
+}: ProjectTasksProps) {
   return (
     <Box component="section" my="xl">
       <Carousel align="start" dragFree h={500} slideGap="md" slideSize="auto">
@@ -86,6 +119,7 @@ function ProjectTasks({ columns, onTaskOpen, tasks }: ProjectTasksProps) {
               <ColumnView
                 column={column}
                 onTaskOpen={onTaskOpen}
+                project={project}
                 tasks={columnTasks}
               />
             </Carousel.Slide>
@@ -99,53 +133,98 @@ function ProjectTasks({ columns, onTaskOpen, tasks }: ProjectTasksProps) {
 type ColumnViewProps = {
   column: Column;
   onTaskOpen: (task: Task) => void;
+  project: Project;
   tasks: Task[];
 };
-function ColumnView({ column, onTaskOpen, tasks }: ColumnViewProps) {
+function ColumnView({ column, onTaskOpen, project, tasks }: ColumnViewProps) {
+  const [creationPane, setCreationPane] = useState(false);
   return (
-    <Card h={500} shadow="sm" withBorder>
-      <Title align="center" mb="md" order={3} weight="lighter">
-        {column.name}
-      </Title>
-      <Flex direction="column">
-        {tasks.length > 0 ? (
-          tasks.map((task) => (
-            <Card
-              key={`task_${task.id}`}
-              onClick={() => onTaskOpen(task)}
-              shadow="md"
-              withBorder
-              sx={{
-                ':hover': {
-                  cursor: 'pointer',
-                },
-              }}
-            >
-              <Title align="center" order={4} weight="normal">
-                {task.title}
-              </Title>
-            </Card>
-          ))
-        ) : (
-          <Text align="center" color="dimmed">
-            Aucune tâche n&apos;existe dans cette colonne.
-          </Text>
-        )}
-      </Flex>
-    </Card>
+    <>
+      <Card h={500} shadow="sm" sx={{ overflowY: 'auto' }} withBorder>
+        <Title align="center" mb="md" order={3} weight="lighter">
+          {column.name}
+        </Title>
+        <Flex direction="column">
+          {tasks.length > 0 ? (
+            tasks.map((task) => (
+              <Card
+                key={`task_${task.id}`}
+                mb="md"
+                onClick={() => onTaskOpen(task)}
+                shadow="md"
+                withBorder
+                sx={{
+                  ':hover': {
+                    cursor: 'pointer',
+                  },
+                }}
+              >
+                <Title align="center" order={4} weight="normal">
+                  {task.title}
+                </Title>
+              </Card>
+            ))
+          ) : (
+            <Text align="center" color="dimmed">
+              Aucune tâche n&apos;existe dans cette colonne.
+            </Text>
+          )}
+          <Button
+            onClick={() => setCreationPane(true)}
+            mt="md"
+            variant="subtle"
+          >
+            Nouvelle tâche
+          </Button>
+        </Flex>
+      </Card>
+      <CreateTaskModal
+        close={() => setCreationPane(false)}
+        column={column}
+        project={project}
+        visible={creationPane}
+      />
+    </>
   );
 }
 
 type TaskModalProps = { onClose: () => void; project: Project; task: Task };
 function TaskModal({ onClose, project, task }: TaskModalProps) {
   const { user } = useAuth();
+  const isOwner = user?.username === project.owner.username;
   const form = useForm({
     initialValues: {
       title: task.title,
       description: task.description,
       assignee: task.assignee?.user?.username ?? '',
       dueDate: task.dueDate ? new Date(task.dueDate) : null,
+      column: `${task.column.id}`,
     },
+    validate: yupResolver(
+      Yup.object().shape({
+        title: Yup.string()
+          .required('Le titre de la tâche est obligatoire.')
+          .min(
+            2,
+            "Le titre de la tâche doit être composé d'au moins 2 caractères.",
+          )
+          .max(32, 'Le titre de la tâche ne doit pas excéder 32 caractères.'),
+        description: Yup.string()
+          .nullable()
+          .max(
+            2048,
+            'La description de la tâche ne doit pas excéder 2048 caractères.',
+          ),
+        assignee: isOwner
+          ? Yup.string()
+          : Yup.string().oneOf(
+              ['', user?.username],
+              'Vous ne pouvez assigner que vous-même à cette tâche.',
+            ),
+        dueDate: Yup.string().nullable(),
+        column: Yup.number().integer(),
+      }),
+    ),
   });
   const queryClient = useQueryClient();
 
@@ -154,13 +233,36 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
       .update(task.id, {
         title: form.values.title,
         description: form.values.description ?? '',
-        assignee: form.values.assignee || null,
-        dueDate: form.values.dueDate?.toISOString() || null,
+        assignee: form.values.assignee || '',
+        dueDate: form.values.dueDate?.toISOString() || '',
+        columnId: +form.values.column,
       })
       .then(() => {
         queryClient.invalidateQueries([`project_${project.id}_tasks`]);
         onClose();
+        showNotification({
+          title: 'Tâche mise à jour',
+          message: `La tâche ${task.title} a été mise à jour avec succès.`,
+        });
+      })
+      .catch((e: APIError) => {
+        if (e.title === 'MEMBER_NOT_FOUND' || e.title === 'USER_NOT_FOUND')
+          form.setFieldValue(
+            'assignee',
+            "Cet utilisateur n'est pas membre du projet.",
+          );
       });
+
+  const deleteTask = () =>
+    api.tasks.remove(task.id).then(() => {
+      queryClient.invalidateQueries([`project_${project.id}_tasks`]);
+      onClose();
+      showNotification({
+        title: 'Tâche supprimée',
+        message: `La tâche ${task.title} a été supprimée avec succès.`,
+      });
+    });
+
   const editable = user !== null && project.owner.username === user.username;
 
   return (
@@ -189,12 +291,22 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
         />
         <TextInput
           disabled={
-            task.assignee?.user.username === user?.username || !editable
+            task.assignee != null &&
+            (task.assignee?.user.username !== user?.username || !editable)
           }
           label="Affectée à"
           mb="md"
           placeholder="jdupont"
           {...form.getInputProps('assignee')}
+        />
+        <Select
+          label="Colonne"
+          data={project.columns.map((c) => ({
+            label: c.name,
+            value: `${c.id}`,
+          }))}
+          mb="md"
+          {...form.getInputProps('column')}
         />
         <DatePicker
           disabled={!editable}
@@ -206,6 +318,17 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
         <Button disabled={!editable} fullWidth mb="md" type="submit">
           Mettre à jour
         </Button>
+        {isOwner && (
+          <Button
+            color="red"
+            fullWidth
+            leftIcon={<IconTrash size={16} />}
+            mb="md"
+            onClick={deleteTask}
+          >
+            Supprimer la tâche
+          </Button>
+        )}
       </form>
       <Text align="center" color="dimmed">
         Dernière mise à jour il y a {dayjs(task.updatedAt).toNow(true)}.<br />

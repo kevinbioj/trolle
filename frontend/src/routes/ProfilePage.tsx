@@ -1,6 +1,7 @@
 import { Alert, Button, Container, TextInput, Title } from '@mantine/core';
 import { useForm, yupResolver } from '@mantine/form';
 import { IconAlertCircle } from '@tabler/icons';
+import { useQueryClient } from '@tanstack/react-query';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
 import { useState } from 'react';
@@ -12,7 +13,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export default function ProfilePage() {
-  const { refetchUser, user } = useAuth();
+  const { user } = useAuth();
   const form = useForm({
     initialValues: { displayName: user!.displayName },
     validate: yupResolver(
@@ -24,12 +25,13 @@ export default function ProfilePage() {
     ),
   });
   const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const handleSubmit = () => {
     setError(null);
     api.users
       .update(form.values.displayName)
-      .then(() => refetchUser())
+      .then((user) => queryClient.setQueryData(['user'], user))
       .catch((e: APIError) =>
         setError(ERROR_MESSAGES[e.title] ?? ERROR_MESSAGES.DEFAULT),
       );

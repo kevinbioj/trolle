@@ -21,11 +21,9 @@ export default function LoginPage() {
 
   const handleSubmit = () => {
     setError(null);
-    login(form.values.username, form.values.password)
-      .then(() => navigate({ to: '/' }))
-      .catch((e: APIError) =>
-        setError(ERROR_MESSAGES[e.title] ?? ERROR_MESSAGES.DEFAULT),
-      );
+    login(form.values.username, form.values.password).catch((e: APIError) =>
+      setError(ERROR_MESSAGES[e.title] ?? ERROR_MESSAGES.DEFAULT),
+    );
   };
 
   return (

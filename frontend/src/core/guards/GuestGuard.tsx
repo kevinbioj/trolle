@@ -4,5 +4,5 @@ import { type ReactNode } from 'react';
 
 export function GuestGuard({ children }: { children: ReactNode }) {
   const { user } = useAuth();
-  return user ? <Navigate to="/login" /> : <>{children}</>;
+  return user ? <Navigate to="/" /> : <>{children}</>;
 }

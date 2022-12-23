@@ -4,6 +4,7 @@ import {
   Card,
   Divider,
   Flex,
+  LoadingOverlay,
   SimpleGrid,
   Text,
   Title,
@@ -27,13 +28,20 @@ export default function HomePage() {
     queryKey: ['public_projects'],
   });
 
-  if ((user !== null && myProjects.isLoading) || !publicProjects.data)
-    return null;
-  return (
+  if (user === null) {
+    return publicProjects.data ? (
+      <HomePageView myProjects={null} publicProjects={publicProjects.data} />
+    ) : (
+      <LoadingOverlay visible />
+    );
+  }
+  return myProjects.data && publicProjects.data ? (
     <HomePageView
-      myProjects={myProjects.data ?? null}
+      myProjects={myProjects.data}
       publicProjects={publicProjects.data}
     />
+  ) : (
+    <LoadingOverlay visible />
   );
 }
 
@@ -44,7 +52,7 @@ type HomePageViewProps = {
 function HomePageView({ myProjects, publicProjects }: HomePageViewProps) {
   return (
     <>
-      <MyProjectsProps myProjects={myProjects ?? []} />
+      {myProjects && <MyProjectsProps myProjects={myProjects} />}
       <PublicProjectsProps publicProjects={publicProjects} />
     </>
   );

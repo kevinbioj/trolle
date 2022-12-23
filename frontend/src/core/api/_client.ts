@@ -5,12 +5,15 @@ const isJSON = (type: string) =>
     type.startsWith(t),
   );
 
-interface ClientOptions {
-  body?: Record<string, unknown> | URLSearchParams;
+interface ClientOptions<B> {
+  body?: B;
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 }
 
-export default <T>(endpoint: string, options: ClientOptions = {}): Promise<T> =>
+export default <T, B = undefined>(
+  endpoint: string,
+  options: ClientOptions<B> = {},
+): Promise<T> =>
   fetch(`${API_URL}${endpoint}`, {
     credentials: 'include',
     ...(options.body

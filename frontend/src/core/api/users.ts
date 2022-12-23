@@ -9,12 +9,12 @@ export const register = (
   password: string,
   displayName: string,
 ) =>
-  api<User>('/users/register', {
+  api<User, any>('/users/register', {
     body: { username, password, displayName },
   });
 
 export const update = (displayName: string) =>
-  api<User>('/users/@me', {
+  api<User, any>('/users/@me', {
     body: { displayName },
     method: 'PATCH',
   });

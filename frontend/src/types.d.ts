@@ -24,6 +24,7 @@ interface Project {
   name: string;
   owner: User;
   columns: Column[];
+  isPublic: boolean;
   createdAt: string;
 }
 

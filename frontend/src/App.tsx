@@ -5,6 +5,7 @@ import {
   MantineProvider,
   type MantineThemeOverride,
 } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import { Outlet, ReactLocation, Router } from '@tanstack/react-location';
 import { Footer, Header } from 'layout';
 import { AuthProvider } from 'core/providers';
@@ -41,21 +42,23 @@ const theme: MantineThemeOverride = {
 function App() {
   return (
     <MantineProvider theme={theme} withCSSVariables withNormalizeCSS>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Router location={location} routes={routes}>
-            <Header />
-            <Divider mb="xl" />
-            <Box component="main">
-              <Container size="xl">
-                <Outlet />
-              </Container>
-            </Box>
-            <Divider mt="xl" />
-            <Footer />
-          </Router>
-        </AuthProvider>
-      </QueryClientProvider>
+      <NotificationsProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <Router location={location} routes={routes}>
+              <Header />
+              <Divider mb="xl" />
+              <Box component="main">
+                <Container size="xl">
+                  <Outlet />
+                </Container>
+              </Box>
+              <Divider mt="xl" />
+              <Footer />
+            </Router>
+          </AuthProvider>
+        </QueryClientProvider>
+      </NotificationsProvider>
     </MantineProvider>
   );
 }

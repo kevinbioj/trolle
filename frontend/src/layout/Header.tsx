@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Menu } from '@mantine/core';
-import { IconDoorExit, IconUser } from '@tabler/icons';
+import { IconChevronDown, IconDoorExit, IconUser } from '@tabler/icons';
 import { Link } from '@tanstack/react-location';
 import { Logo } from 'assets';
 import { useAuth } from 'core/providers';
@@ -16,7 +16,9 @@ export function Header() {
           {user ? (
             <Menu shadow="md">
               <Menu.Target>
-                <Button>{user.displayName}</Button>
+                <Button rightIcon={<IconChevronDown size={16} />}>
+                  {user.displayName}
+                </Button>
               </Menu.Target>
               <Menu.Dropdown>
                 <Menu.Item

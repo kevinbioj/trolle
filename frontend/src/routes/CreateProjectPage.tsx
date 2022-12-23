@@ -22,7 +22,10 @@ export default function CreateProjectPage() {
     initialValues: { name: '', columns: [] },
     validate: yupResolver(
       Yup.object().shape({
-        name: Yup.string().required('Ce champ est requis.'),
+        name: Yup.string()
+          .required('Ce champ est requis.')
+          .min(4, "Le nom du projet doit être composé d'au moins 4 caractères.")
+          .max(32, 'Le nom du projet ne doit pas excéder 32 caractères.'),
         columns: Yup.array().of(
           Yup.object().shape({
             name: Yup.string()
@@ -76,10 +79,10 @@ export default function CreateProjectPage() {
           </Title>
           <TextInput defaultValue="Stories" disabled mb="md" />
           {form.values.columns.map((column, index) => (
-            <Flex align="center" key={column.key} mb="md">
+            <Flex align="center" key={column.key} gap="sm" mb="md">
               <TextInput
                 required
-                w="95%"
+                w="100%"
                 {...form.getInputProps(`columns.${index}.name`)}
               />
               <ActionIcon
