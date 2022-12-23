@@ -137,6 +137,7 @@ type ColumnViewProps = {
   tasks: Task[];
 };
 function ColumnView({ column, onTaskOpen, project, tasks }: ColumnViewProps) {
+  const { user } = useAuth();
   const [creationPane, setCreationPane] = useState(false);
   return (
     <>
@@ -169,13 +170,15 @@ function ColumnView({ column, onTaskOpen, project, tasks }: ColumnViewProps) {
               Aucune tâche n&apos;existe dans cette colonne.
             </Text>
           )}
-          <Button
-            onClick={() => setCreationPane(true)}
-            mt="md"
-            variant="subtle"
-          >
-            Nouvelle tâche
-          </Button>
+          {user?.username === project.owner.username && (
+            <Button
+              onClick={() => setCreationPane(true)}
+              mt="md"
+              variant="subtle"
+            >
+              Nouvelle tâche
+            </Button>
+          )}
         </Flex>
       </Card>
       <CreateTaskModal
@@ -291,8 +294,9 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
         />
         <TextInput
           disabled={
-            task.assignee != null &&
-            (task.assignee?.user.username !== user?.username || !editable)
+            user === null ||
+            (task.assignee != null &&
+              (task.assignee?.user.username !== user?.username || !editable))
           }
           label="Affectée à"
           mb="md"
@@ -300,6 +304,7 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
           {...form.getInputProps('assignee')}
         />
         <Select
+          disabled={!editable}
           label="Colonne"
           data={project.columns.map((c) => ({
             label: c.name,
