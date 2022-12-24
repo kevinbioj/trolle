@@ -5,6 +5,7 @@ import fr.kevinbioj.trolle.model.member.MemberService;
 import fr.kevinbioj.trolle.model.project.ProjectService;
 import fr.kevinbioj.trolle.model.task.TaskEntity;
 import fr.kevinbioj.trolle.model.task.TaskService;
+import fr.kevinbioj.trolle.model.user.UserEntity;
 import fr.kevinbioj.trolle.model.user.UserService;
 import fr.kevinbioj.trolle.view.TaskView;
 import jakarta.validation.Valid;
@@ -100,9 +101,9 @@ public class TaskController {
     }
 
     private record UpdateTaskDto(@Pattern(regexp = TaskEntity.TITLE_PATTERN) String title,
-                                 JsonNullable<String> description,
+                                 JsonNullable<@Pattern(regexp = TaskEntity.DESCRIPTION_PATTERN) String> description,
                                  Integer columnId,
-                                 JsonNullable<String> assignee,
+                                 JsonNullable<@Pattern(regexp = UserEntity.USERNAME_PATTERN) String> assignee,
                                  JsonNullable<LocalDateTime> dueDate) {
     }
 }
