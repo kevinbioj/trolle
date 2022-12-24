@@ -11,7 +11,7 @@ export function Header() {
       <Container mx="auto" size="xl">
         <Flex align="center" justify="space-between" py="xs">
           <Link to="/" title="Accueil">
-            <Logo height="3rem" />
+            <Logo style={{ height: '3rem' }} />
           </Link>
           {user ? (
             <Menu shadow="md">
