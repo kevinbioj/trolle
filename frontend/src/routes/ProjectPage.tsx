@@ -228,11 +228,13 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
             'La description de la tâche ne doit pas excéder 2048 caractères.',
           ),
         assignee: isOwner
-          ? Yup.string()
-          : Yup.string().oneOf(
-              ['', user?.username],
-              'Vous ne pouvez assigner que vous-même à cette tâche.',
-            ),
+          ? Yup.string().nullable()
+          : Yup.string()
+              .nullable()
+              .oneOf(
+                ['', user?.username],
+                'Vous ne pouvez assigner que vous-même à cette tâche.',
+              ),
         dueDate: Yup.string().nullable(),
         column: Yup.number().integer(),
       }),
@@ -259,7 +261,7 @@ function TaskModal({ onClose, project, task }: TaskModalProps) {
       })
       .catch((e: APIError) => {
         if (e.title === 'MEMBER_NOT_FOUND' || e.title === 'USER_NOT_FOUND')
-          form.setFieldValue(
+          form.setFieldError(
             'assignee',
             "Cet utilisateur n'est pas membre du projet.",
           );
