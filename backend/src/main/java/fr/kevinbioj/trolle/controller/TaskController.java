@@ -103,7 +103,7 @@ public class TaskController {
     private record UpdateTaskDto(@Pattern(regexp = TaskEntity.TITLE_PATTERN) String title,
                                  JsonNullable<@Pattern(regexp = TaskEntity.DESCRIPTION_PATTERN) String> description,
                                  Integer columnId,
-                                 JsonNullable<@Pattern(regexp = UserEntity.USERNAME_PATTERN) String> assignee,
+                                 JsonNullable<String> assignee,
                                  JsonNullable<LocalDateTime> dueDate) {
     }
 }
