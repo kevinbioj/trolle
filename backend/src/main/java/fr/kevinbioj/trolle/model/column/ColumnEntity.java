@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 @Setter
 @Entity
 @Table(name = "`column`")
-public class ColumnEntity {
+public class ColumnEntity implements Comparable<ColumnEntity> {
 
     public static final String NAME_PATTERN = "^.{2,32}$";
 
@@ -38,6 +38,11 @@ public class ColumnEntity {
     }
 
     // ---
+
+    @Override
+    public int compareTo(ColumnEntity o) {
+        return id.compareTo(o.id);
+    }
 
     @Override
     public boolean equals(Object o) {
