@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,7 @@ public class UserController {
     @PatchMapping("/@me")
     public UserView updateAuthenticated(Authentication auth, @RequestBody @Valid UpdateUserDto data) {
         var user = userService.get(auth.getName());
-        var updated = userService.update(user, data.displayName());
+        var updated = userService.update(user, data.displayName().orElse(user.getDisplayName()));
         return UserView.from(updated);
     }
 
@@ -69,7 +70,7 @@ public class UserController {
                                    @NotNull @Pattern(regexp = UserEntity.DISPLAY_NAME_PATTERN) String displayName) {
     }
 
-    private record UpdateUserDto(@Pattern(regexp = UserEntity.DISPLAY_NAME_PATTERN) String displayName) {
+    private record UpdateUserDto(JsonNullable<@NotNull @Pattern(regexp = UserEntity.DISPLAY_NAME_PATTERN) String> displayName) {
     }
 
     private record ChangePasswordDto(@NotNull String current,

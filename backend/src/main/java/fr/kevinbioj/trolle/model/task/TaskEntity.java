@@ -7,20 +7,19 @@ import fr.kevinbioj.trolle.model.task.exception.InvalidTaskDescriptionException;
 import fr.kevinbioj.trolle.model.task.exception.InvalidTaskTitleException;
 import fr.kevinbioj.trolle.model.user.UserEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-@Data
-@EqualsAndHashCode(of = "id")
-@ToString(of = "id")
+@Getter
+@Setter
 @Entity
 @Table(name = "task")
 public class TaskEntity {
@@ -95,6 +94,21 @@ public class TaskEntity {
      */
     public boolean isVisibleBy(UserEntity user) {
         return getProject().isVisibleBy(user);
+    }
+
+    // ---
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        TaskEntity that = (TaskEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     // ---

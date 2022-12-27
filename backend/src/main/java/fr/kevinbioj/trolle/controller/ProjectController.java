@@ -1,5 +1,6 @@
 package fr.kevinbioj.trolle.controller;
 
+import fr.kevinbioj.trolle.model.column.ColumnEntity;
 import fr.kevinbioj.trolle.model.column.ColumnService;
 import fr.kevinbioj.trolle.model.member.MemberService;
 import fr.kevinbioj.trolle.model.project.ProjectEntity;
@@ -11,7 +12,9 @@ import fr.kevinbioj.trolle.view.ProjectView;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -86,8 +89,8 @@ public class ProjectController {
         if (!project.isManageableBy(user))
             throw new AccessDeniedException("You are not allowed to manage this project.");
         var updated = projectService.update(project,
-                data.name() != null ? data.name() : project.getName(),
-                data.isPublic() != null ? data.isPublic() : project.isPublic());
+                data.name().orElse(project.getName()),
+                data.isPublic().orElse(project.isPublic()));
         return ProjectView.from(updated);
     }
 
@@ -104,10 +107,10 @@ public class ProjectController {
     // --- DATA TRANSFER OBJECTS
 
     private record CreateProjectDto(@NotNull @Pattern(regexp = ProjectEntity.NAME_PATTERN) String name,
-                                    @NotNull List<String> columns) {
+                                    @NotNull @Size(max = 8) List<@Pattern(regexp = ColumnEntity.NAME_PATTERN) String> columns) {
     }
 
-    private record UpdateProjectDto(@Pattern(regexp = ProjectEntity.NAME_PATTERN) String name,
-                                    Boolean isPublic) {
+    private record UpdateProjectDto(JsonNullable<@NotNull @Pattern(regexp = ProjectEntity.NAME_PATTERN) String> name,
+                                    JsonNullable<@NotNull Boolean> isPublic) {
     }
 }

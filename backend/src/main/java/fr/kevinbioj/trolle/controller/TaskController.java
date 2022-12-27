@@ -5,7 +5,6 @@ import fr.kevinbioj.trolle.model.member.MemberService;
 import fr.kevinbioj.trolle.model.project.ProjectService;
 import fr.kevinbioj.trolle.model.task.TaskEntity;
 import fr.kevinbioj.trolle.model.task.TaskService;
-import fr.kevinbioj.trolle.model.user.UserEntity;
 import fr.kevinbioj.trolle.model.user.UserService;
 import fr.kevinbioj.trolle.view.TaskView;
 import jakarta.validation.Valid;
@@ -73,9 +72,11 @@ public class TaskController {
             throw new AccessDeniedException("You are not allowed to manage this task.");
         var updated = taskService.update(
                 task,
-                data.title() != null ? data.title() : task.getTitle(),
-                data.description().isPresent() ? data.description.get() : task.getDescription(),
-                data.columnId() != null ? columnService.get(task.getProject(), data.columnId()) : task.getColumn(),
+                data.title().orElse(task.getTitle()),
+                data.description().orElse(task.getDescription()),
+                data.columnId().isPresent()
+                        ? data.columnId().get() != null ? columnService.get(task.getProject(), data.columnId().get()) : null
+                        : task.getColumn(),
                 data.assignee().isPresent()
                         ? data.assignee().get() != null ? memberService.get(task.getProject(), userService.get(data.assignee().get())) : null
                         : task.getAssignee(),
@@ -100,9 +101,9 @@ public class TaskController {
                                  @NotNull Integer columnId) {
     }
 
-    private record UpdateTaskDto(@Pattern(regexp = TaskEntity.TITLE_PATTERN) String title,
+    private record UpdateTaskDto(JsonNullable<@NotNull @Pattern(regexp = TaskEntity.TITLE_PATTERN) String> title,
                                  JsonNullable<@Pattern(regexp = TaskEntity.DESCRIPTION_PATTERN) String> description,
-                                 Integer columnId,
+                                 JsonNullable<@NotNull Integer> columnId,
                                  JsonNullable<String> assignee,
                                  JsonNullable<LocalDateTime> dueDate) {
     }

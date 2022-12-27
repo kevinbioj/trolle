@@ -3,15 +3,17 @@ package fr.kevinbioj.trolle.model.column;
 import fr.kevinbioj.trolle.model.column.exception.InvalidColumnNameException;
 import fr.kevinbioj.trolle.model.project.ProjectEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-@Data @EqualsAndHashCode(of = "id") @ToString(of = "id")
-@Entity @Table(name = "`column`")
-public class ColumnEntity implements Comparable<ColumnEntity> {
+@Getter
+@Setter
+@Entity
+@Table(name = "`column`")
+public class ColumnEntity {
 
     public static final String NAME_PATTERN = "^.{2,32}$";
 
@@ -35,9 +37,19 @@ public class ColumnEntity implements Comparable<ColumnEntity> {
         this.name = name;
     }
 
+    // ---
+
     @Override
-    public int compareTo(ColumnEntity o) {
-        return id.compareTo(o.id);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ColumnEntity that = (ColumnEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     // ---

@@ -5,19 +5,21 @@ import fr.kevinbioj.trolle.model.member.MemberEntity;
 import fr.kevinbioj.trolle.model.project.exception.InvalidProjectNameException;
 import fr.kevinbioj.trolle.model.user.UserEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-@Data @EqualsAndHashCode(of = "id") @ToString(of = "id")
-@Entity @Table(name = "project")
+@Getter
+@Setter
+@Entity
+@Table(name = "project")
 public class ProjectEntity {
 
     public static final String NAME_PATTERN = "^.{4,64}$";
@@ -74,6 +76,21 @@ public class ProjectEntity {
     public boolean isVisibleBy(UserEntity user) {
         if (owner.equals(user)) return true;
         return isPublic;
+    }
+
+    // ---
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        ProjectEntity that = (ProjectEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     // ---

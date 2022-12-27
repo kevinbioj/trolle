@@ -3,16 +3,18 @@ package fr.kevinbioj.trolle.model.user;
 import fr.kevinbioj.trolle.model.user.exception.InvalidDisplayNameException;
 import fr.kevinbioj.trolle.model.user.exception.InvalidUsernameException;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
-@Data @EqualsAndHashCode(of = "id") @ToString(of = "id")
-@Entity @Table(name = "user")
+@Getter
+@Setter
+@Entity
+@Table(name = "user")
 public class UserEntity {
 
     public static final String USERNAME_PATTERN = "^[A-Za-z][A-Za-z0-9_]{0,19}$";
@@ -49,6 +51,21 @@ public class UserEntity {
         if (!Pattern.matches(DISPLAY_NAME_PATTERN, displayName))
             throw new InvalidDisplayNameException(displayName);
         this.displayName = displayName;
+    }
+
+    // ---
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        UserEntity that = (UserEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     // ---

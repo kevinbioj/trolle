@@ -3,15 +3,17 @@ package fr.kevinbioj.trolle.model.member;
 import fr.kevinbioj.trolle.model.project.ProjectEntity;
 import fr.kevinbioj.trolle.model.user.UserEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.Objects;
 
-@Data @EqualsAndHashCode(of = "id") @ToString(of = "id")
-@Entity @Table(name = "member")
+@Getter
+@Setter
+@Entity
+@Table(name = "member")
 public class MemberEntity {
 
     @Id
@@ -27,6 +29,21 @@ public class MemberEntity {
     @Column(columnDefinition = "TIMESTAMP", nullable = false)
     @CreationTimestamp
     private Instant joinedAt;
+
+    // ---
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        MemberEntity that = (MemberEntity) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 
     // ---
 
