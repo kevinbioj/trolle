@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://192.168.76.76:8081';
+const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 const isJSON = (type: string) =>
   ['application/json', 'application/problem+json'].some((t) =>
