@@ -23,7 +23,6 @@ export function CreateTaskModal({
     validate: yupResolver(
       Yup.object().shape({
         title: Yup.string()
-          .required('Le titre de la tâche est obligatoire.')
           .min(
             2,
             "Le titre de la tâche doit être composé d'au moins 2 caractères.",
@@ -62,6 +61,7 @@ export function CreateTaskModal({
           label="Titre"
           mb="md"
           placeholder="Ma superbe tâche"
+          withAsterisk
           {...form.getInputProps('title')}
         />
         <Button fullWidth type="submit">

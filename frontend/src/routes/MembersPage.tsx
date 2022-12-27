@@ -49,7 +49,7 @@ function MembersView({ members, project }: MembersViewProps) {
       <Title mb="xl" weight="normal">
         Membres de {project.name}
       </Title>
-      <Table>
+      <Table striped highlightOnHover withBorder>
         <thead>
           <tr>
             <th>Pseudonyme</th>

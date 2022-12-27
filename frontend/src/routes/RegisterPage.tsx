@@ -89,30 +89,30 @@ export default function RegisterPage() {
             label="Pseudonyme"
             mb="xs"
             placeholder="jdupont"
-            required
+            withAsterisk
             {...form.getInputProps('username')}
           />
           <TextInput
             label="Mot de passe"
             mb="xs"
             placeholder="••••••••••"
-            required
             type="password"
+            withAsterisk
             {...form.getInputProps('password')}
           />
           <TextInput
             label="Confirmation du mot de passe"
             mb="xs"
             placeholder="••••••••••"
-            required
             type="password"
+            withAsterisk
             {...form.getInputProps('passwordConfirmation')}
           />
           <TextInput
             label="Nom public"
             mb="xs"
             placeholder="Jean DUPONT"
-            required
+            withAsterisk
             {...form.getInputProps('displayName')}
           />
           <Button fullWidth mb="xs" type="submit">

@@ -23,7 +23,6 @@ export function ProjectSettingsModal({
     validate: yupResolver(
       Yup.object().shape({
         name: Yup.string()
-          .required('Le nom du projet est obligatoire.')
           .min(4, "Le nom du projet doit être composé d'au moins 4 caractères.")
           .max(64, 'Le nom de la tâche ne doit pas excéder 64 caractères.'),
       }),
@@ -56,13 +55,14 @@ export function ProjectSettingsModal({
       onClose={close}
       opened={visible}
       shadow="md"
-      title={`Éditer le projet ${project.name}`}
+      title="Paramètres du projet"
     >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <TextInput
           label="Nom"
           mb="md"
           placeholder="Mon superbe projet"
+          withAsterisk
           {...form.getInputProps('name')}
         />
         <Switch

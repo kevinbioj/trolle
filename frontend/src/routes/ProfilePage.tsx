@@ -60,8 +60,8 @@ export default function ProfilePage() {
           <TextInput
             label="Nom public"
             mb="xs"
-            placeholder="jdupont"
-            required
+            placeholder="Jean DUPONT"
+            withAsterisk
             {...form.getInputProps('displayName')}
           />
           <Button

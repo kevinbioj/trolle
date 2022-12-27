@@ -1,7 +1,7 @@
 import { Alert, Button, Container, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconAlertCircle } from '@tabler/icons';
-import { Link, useNavigate } from '@tanstack/react-location';
+import { Link } from '@tanstack/react-location';
 import { useAuth } from 'core/providers';
 import { useState } from 'react';
 
@@ -16,7 +16,6 @@ export default function LoginPage() {
   const form = useForm({
     initialValues: { username: '', password: '' },
   });
-  const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = () => {

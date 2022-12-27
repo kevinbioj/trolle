@@ -62,8 +62,8 @@ type MyProjectsProps = { myProjects: Project[] };
 function MyProjectsProps({ myProjects }: MyProjectsProps) {
   return (
     <Box component="section" my="xl">
-      <Flex align="center" justify="space-between">
-        <Title mb="xs" order={2} weight="normal">
+      <Flex align="center" justify="space-between" mb="md">
+        <Title order={2} weight="normal">
           Mes projets
         </Title>
         <Button
@@ -113,7 +113,7 @@ type PublicProjectsProps = Pick<HomePageViewProps, 'publicProjects'>;
 function PublicProjectsProps({ publicProjects }: PublicProjectsProps) {
   return (
     <Box component="section" my="xl">
-      <Title mb="xs" order={2} weight="normal">
+      <Title mb="md" order={2} weight="normal">
         Découvrir des projets publics
       </Title>
       {publicProjects.length > 0 ? (

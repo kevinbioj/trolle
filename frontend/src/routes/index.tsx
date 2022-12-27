@@ -1,58 +1,67 @@
 import type { Route } from '@tanstack/react-location';
 import { AuthGuard, GuestGuard } from 'core/guards';
 
-import CreateProjectPage from './CreateProjectPage';
-import HomePage from './HomePage';
-import LoginPage from './LoginPage';
-import ProfilePage from './ProfilePage';
-import ProjectPage from './ProjectPage';
-import RegisterPage from './RegisterPage';
-import MembersPage from './MembersPage';
+const CreateProjectPage = () =>
+  import('./CreateProjectPage').then((p) => (
+    <AuthGuard>
+      <p.default />
+    </AuthGuard>
+  ));
+const HomePage = () => import('./HomePage').then((p) => <p.default />);
+const LoginPage = () =>
+  import('./LoginPage').then((p) => (
+    <GuestGuard>
+      <p.default />
+    </GuestGuard>
+  ));
+const ProfilePage = () =>
+  import('./ProfilePage').then((p) => (
+    <AuthGuard>
+      <p.default />
+    </AuthGuard>
+  ));
+const ProjectPage = () => import('./ProjectPage').then((p) => <p.default />);
+const RegisterPage = () =>
+  import('./RegisterPage').then((p) => (
+    <GuestGuard>
+      <p.default />
+    </GuestGuard>
+  ));
+const MembersPage = () =>
+  import('./MembersPage').then((p) => (
+    <AuthGuard>
+      <p.default />
+    </AuthGuard>
+  ));
 
 export default [
-  { path: '/', element: <HomePage /> },
+  { path: '/', element: HomePage },
   {
     path: '/profile',
-    element: (
-      <AuthGuard>
-        <ProfilePage />
-      </AuthGuard>
-    ),
+    element: ProfilePage,
   },
   {
     path: '/login',
-    element: (
-      <GuestGuard>
-        <LoginPage />
-      </GuestGuard>
-    ),
+    element: LoginPage,
   },
   {
     path: '/register',
-    element: (
-      <GuestGuard>
-        <RegisterPage />
-      </GuestGuard>
-    ),
+    element: RegisterPage,
   },
   {
     path: '/projects/create',
-    element: <CreateProjectPage />,
+    element: CreateProjectPage,
   },
   {
     path: '/projects/:id',
     children: [
       {
         path: '/members',
-        element: (
-          <AuthGuard>
-            <MembersPage />
-          </AuthGuard>
-        ),
+        element: MembersPage,
       },
       {
         path: '/',
-        element: <ProjectPage />,
+        element: ProjectPage,
       },
     ],
   },

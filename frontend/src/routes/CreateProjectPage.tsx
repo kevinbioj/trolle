@@ -23,7 +23,6 @@ export default function CreateProjectPage() {
     validate: yupResolver(
       Yup.object().shape({
         name: Yup.string()
-          .required('Ce champ est requis.')
           .min(4, "Le nom du projet doit être composé d'au moins 4 caractères.")
           .max(32, 'Le nom du projet ne doit pas excéder 32 caractères.'),
         columns: Yup.array().of(
@@ -71,7 +70,7 @@ export default function CreateProjectPage() {
             label="Nom"
             mb="lg"
             placeholder="Mon superbe projet"
-            required
+            withAsterisk
             {...form.getInputProps('name')}
           />
           <Title mb="xs" order={2} weight="lighter">
@@ -81,7 +80,7 @@ export default function CreateProjectPage() {
           {form.values.columns.map((column, index) => (
             <Flex align="center" key={column.key} gap="sm" mb="md">
               <TextInput
-                required
+                withAsterisk
                 w="100%"
                 {...form.getInputProps(`columns.${index}.name`)}
               />
@@ -93,15 +92,17 @@ export default function CreateProjectPage() {
               </ActionIcon>
             </Flex>
           ))}
-          <ActionIcon
-            mb="md"
-            mx="auto"
-            onClick={() =>
-              form.insertListItem('columns', { name: '', key: randomId() })
-            }
-          >
-            <IconPlus size={18} />
-          </ActionIcon>
+          {form.values.columns.length < 8 && (
+            <ActionIcon
+              mb="md"
+              mx="auto"
+              onClick={() =>
+                form.insertListItem('columns', { name: '', key: randomId() })
+              }
+            >
+              <IconPlus size={18} />
+            </ActionIcon>
+          )}
           <TextInput defaultValue="Terminées" disabled mb="md" />
           <Button fullWidth type="submit">
             Créer
