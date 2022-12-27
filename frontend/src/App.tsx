@@ -23,6 +23,11 @@ const queryClient = new QueryClient({
 });
 const theme: MantineThemeOverride = {
   components: {
+    ActionIcon: {
+      defaultProps: {
+        color: 'pink',
+      },
+    },
     Button: {
       defaultProps: {
         color: 'pink',

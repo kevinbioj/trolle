@@ -10,7 +10,7 @@ export function Header() {
     <Box component="header">
       <Container mx="auto" size="xl">
         <Flex align="center" justify="space-between" py="xs">
-          <Link to="/" title="Accueil">
+          <Link to="/">
             <Logo style={{ height: '3rem' }} />
           </Link>
           {user ? (

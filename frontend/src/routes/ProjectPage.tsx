@@ -38,7 +38,12 @@ function ProjectView({ project, tasks }: ProjectViewProps) {
   const isOwner = user?.username === project.owner.username;
   return (
     <>
-      <Flex align="center" justify="space-between">
+      <Flex
+        align="center"
+        direction={{ base: 'column', sm: 'row' }}
+        gap="md"
+        justify="space-between"
+      >
         <Title order={1} weight="normal">
           {project.name}
         </Title>

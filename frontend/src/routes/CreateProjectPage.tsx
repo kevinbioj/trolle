@@ -60,7 +60,7 @@ export default function CreateProjectPage() {
     <Box component="section" my="xl">
       <Container size="sm">
         <Title align="center" mb="md" order={1} weight="normal">
-          Créer un nouveau projet
+          Nouveau projet
         </Title>
         <form onSubmit={form.onSubmit(handleSubmit)}>
           <Title mb="xs" order={2} weight="lighter">

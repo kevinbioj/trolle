@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Box,
   Button,
   Card,
@@ -9,6 +10,7 @@ import {
   Text,
   Title,
 } from '@mantine/core';
+import { useViewportSize } from '@mantine/hooks';
 import { IconPlus } from '@tabler/icons';
 import { Link } from '@tanstack/react-location';
 import { useQuery } from '@tanstack/react-query';
@@ -60,20 +62,32 @@ function HomePageView({ myProjects, publicProjects }: HomePageViewProps) {
 
 type MyProjectsProps = { myProjects: Project[] };
 function MyProjectsProps({ myProjects }: MyProjectsProps) {
+  const { width } = useViewportSize();
   return (
     <Box component="section" my="xl">
       <Flex align="center" justify="space-between" mb="md">
         <Title order={2} weight="normal">
           Mes projets
         </Title>
-        <Button
-          component={Link}
-          leftIcon={<IconPlus size={16} />}
-          to="/projects/create"
-          variant="outline"
-        >
-          Créer un projet
-        </Button>
+        {width < 500 ? (
+          <ActionIcon
+            component={Link}
+            size="lg"
+            to="/projects/create"
+            variant="outline"
+          >
+            <IconPlus size={18} />
+          </ActionIcon>
+        ) : (
+          <Button
+            component={Link}
+            leftIcon={<IconPlus size={16} />}
+            to="/projects/create"
+            variant="outline"
+          >
+            Créer un projet
+          </Button>
+        )}
       </Flex>
       {myProjects.length > 0 ? (
         <SimpleGrid
