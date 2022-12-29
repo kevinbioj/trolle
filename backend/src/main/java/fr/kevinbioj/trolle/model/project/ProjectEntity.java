@@ -53,6 +53,7 @@ public class ProjectEntity {
 
     public void setName(String name) {
         if (!Pattern.matches(NAME_PATTERN, name))
+            throw new InvalidProjectNameException(name);
         this.name = name;
     }
 
