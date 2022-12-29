@@ -7,7 +7,7 @@ import {
 } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { Outlet, ReactLocation, Router } from '@tanstack/react-location';
-import { Footer, Header } from 'layout';
+import { Header } from 'layout';
 import { AuthProvider } from 'core/providers';
 import routes from 'routes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,7 +25,7 @@ const theme: MantineThemeOverride = {
   components: {
     ActionIcon: {
       defaultProps: {
-        color: 'pink',
+        color: '##FA4D6D',
       },
     },
     Button: {
@@ -58,8 +58,6 @@ function App() {
                   <Outlet />
                 </Container>
               </Box>
-              <Divider mt="xl" />
-              <Footer />
             </Router>
           </AuthProvider>
         </QueryClientProvider>

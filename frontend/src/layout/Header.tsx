@@ -10,7 +10,7 @@ export function Header() {
     <Box component="header">
       <Container mx="auto" size="xl">
         <Flex align="center" justify="space-between" py="xs">
-          <Link to="/">
+          <Link to="/" title="Accueil Trollé">
             <Logo style={{ height: '3rem' }} />
           </Link>
           {user ? (
@@ -39,7 +39,7 @@ export function Header() {
               </Menu.Dropdown>
             </Menu>
           ) : (
-            <Button component={Link} to="/login" variant="outline">
+            <Button component={Link} to="/login">
               Connexion
             </Button>
           )}
