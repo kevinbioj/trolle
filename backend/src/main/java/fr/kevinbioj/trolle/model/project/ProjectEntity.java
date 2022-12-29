@@ -75,7 +75,7 @@ public class ProjectEntity {
     public boolean isVisibleBy(UserEntity user) {
         if (isPublic) return true;
         if (owner.equals(user)) return true;
-        return getMembers().contains(user);
+        return getMembers().stream().anyMatch(m -> m.getUser().equals(user));
     }
 
     // ---
