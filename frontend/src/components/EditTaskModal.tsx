@@ -161,7 +161,7 @@ export function EditTaskModal({
           label="Date limite de réalisation"
           locale="fr"
           mb="md"
-          placeholder={dayjs().format('DD/MM/YYYY')}
+          placeholder={editMode ? dayjs().format('DD/MM/YYYY') : 'Aucune'}
           readOnly={!editMode}
           variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('dueDate')}
