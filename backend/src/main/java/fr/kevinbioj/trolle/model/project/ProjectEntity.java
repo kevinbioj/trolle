@@ -53,7 +53,6 @@ public class ProjectEntity {
 
     public void setName(String name) {
         if (!Pattern.matches(NAME_PATTERN, name))
-            throw new InvalidProjectNameException(name);
         this.name = name;
     }
 
@@ -74,8 +73,9 @@ public class ProjectEntity {
      * @param user Utilisateur souhaitant voir le projet.
      */
     public boolean isVisibleBy(UserEntity user) {
+        if (isPublic) return true;
         if (owner.equals(user)) return true;
-        return isPublic;
+        return getMembers().contains(user);
     }
 
     // ---
