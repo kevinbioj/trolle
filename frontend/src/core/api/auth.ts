@@ -1,7 +1,7 @@
 import api from './_client';
 
 export const login = (username: string, password: string) =>
-  api<User, { username: string; password: string }>('/login', {
+  api<User, URLSearchParams>('/login', {
     body: new URLSearchParams({ username, password }),
   });
 
