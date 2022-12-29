@@ -4,6 +4,7 @@ import { IconAlertCircle } from '@tabler/icons';
 import { useNavigate } from '@tanstack/react-location';
 import * as api from 'core/api';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -67,6 +68,9 @@ export default function RegisterPage() {
 
   return (
     <>
+      <Helmet>
+        <title>Inscription – Trollé</title>
+      </Helmet>
       <Title align="center" mb="md">
         Inscription
       </Title>
