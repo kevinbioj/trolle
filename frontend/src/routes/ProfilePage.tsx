@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -39,6 +40,9 @@ export default function ProfilePage() {
 
   return (
     <>
+      <Helmet>
+        <title>Mon profil - Trollé</title>
+      </Helmet>
       <Title align="center" mb="md">
         Mon profil
       </Title>

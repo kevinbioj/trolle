@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
 import dayjs from 'dayjs';
+import { Helmet } from 'react-helmet';
 
 export default function MembersPage() {
   const {
@@ -21,7 +22,14 @@ export default function MembersPage() {
     queryFn: () => api.members.get(id),
   });
   return members.data && project.data ? (
-    <MembersView members={members.data} project={project.data} />
+    <>
+      <MembersView members={members.data} project={project.data} />
+      {project.data && (
+        <Helmet>
+          <title>Gestion des membres – {project.data?.name} – Trollé</title>
+        </Helmet>
+      )}
+    </>
   ) : null;
 }
 

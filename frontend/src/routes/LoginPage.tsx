@@ -4,6 +4,7 @@ import { IconAlertCircle } from '@tabler/icons';
 import { Link } from '@tanstack/react-location';
 import { useAuth } from 'core/providers';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet';
 
 const ERROR_MESSAGES: Record<string, string> = {
   BAD_CREDENTIALS: 'Les identifiants fournis ne correspondent à aucun compte.',
@@ -27,6 +28,9 @@ export default function LoginPage() {
 
   return (
     <>
+      <Helmet>
+        <title>Connexion - Trollé</title>
+      </Helmet>
       <Title align="center" mb="md">
         Connexion
       </Title>

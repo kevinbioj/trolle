@@ -12,6 +12,7 @@ import { randomId } from '@mantine/hooks';
 import { IconPlus, IconTrash } from '@tabler/icons';
 import { useNavigate } from '@tanstack/react-location';
 import * as api from 'core/api';
+import { Helmet } from 'react-helmet';
 import * as Yup from 'yup';
 
 export default function CreateProjectPage() {
@@ -57,58 +58,63 @@ export default function CreateProjectPage() {
       });
 
   return (
-    <Box component="section" my="xl">
-      <Container size="sm">
-        <Title align="center" mb="md" order={1} weight="normal">
-          Nouveau projet
-        </Title>
-        <form onSubmit={form.onSubmit(handleSubmit)}>
-          <Title mb="xs" order={2} weight="lighter">
-            Informations de base
+    <>
+      <Helmet>
+        <title>Nouveau projet - Trollé</title>
+      </Helmet>
+      <Box component="section" my="xl">
+        <Container size="sm">
+          <Title align="center" mb="md" order={1} weight="normal">
+            Nouveau projet
           </Title>
-          <TextInput
-            label="Nom"
-            mb="lg"
-            placeholder="Mon superbe projet"
-            withAsterisk
-            {...form.getInputProps('name')}
-          />
-          <Title mb="xs" order={2} weight="lighter">
-            Colonnes
-          </Title>
-          <TextInput defaultValue="Stories" disabled mb="md" />
-          {form.values.columns.map((column, index) => (
-            <Flex align="center" key={column.key} gap="sm" mb="md">
-              <TextInput
-                withAsterisk
-                w="100%"
-                {...form.getInputProps(`columns.${index}.name`)}
-              />
+          <form onSubmit={form.onSubmit(handleSubmit)}>
+            <Title mb="xs" order={2} weight="lighter">
+              Informations de base
+            </Title>
+            <TextInput
+              label="Nom"
+              mb="lg"
+              placeholder="Mon superbe projet"
+              withAsterisk
+              {...form.getInputProps('name')}
+            />
+            <Title mb="xs" order={2} weight="lighter">
+              Colonnes
+            </Title>
+            <TextInput defaultValue="Stories" disabled mb="md" />
+            {form.values.columns.map((column, index) => (
+              <Flex align="center" key={column.key} gap="sm" mb="md">
+                <TextInput
+                  withAsterisk
+                  w="100%"
+                  {...form.getInputProps(`columns.${index}.name`)}
+                />
+                <ActionIcon
+                  color="red"
+                  onClick={() => form.removeListItem('columns', index)}
+                >
+                  <IconTrash size={18} />
+                </ActionIcon>
+              </Flex>
+            ))}
+            {form.values.columns.length < 8 && (
               <ActionIcon
-                color="red"
-                onClick={() => form.removeListItem('columns', index)}
+                mb="md"
+                mx="auto"
+                onClick={() =>
+                  form.insertListItem('columns', { name: '', key: randomId() })
+                }
               >
-                <IconTrash size={18} />
+                <IconPlus size={18} />
               </ActionIcon>
-            </Flex>
-          ))}
-          {form.values.columns.length < 8 && (
-            <ActionIcon
-              mb="md"
-              mx="auto"
-              onClick={() =>
-                form.insertListItem('columns', { name: '', key: randomId() })
-              }
-            >
-              <IconPlus size={18} />
-            </ActionIcon>
-          )}
-          <TextInput defaultValue="Terminées" disabled mb="md" />
-          <Button fullWidth type="submit">
-            Créer
-          </Button>
-        </form>
-      </Container>
-    </Box>
+            )}
+            <TextInput defaultValue="Terminées" disabled mb="md" />
+            <Button fullWidth type="submit">
+              Créer
+            </Button>
+          </form>
+        </Container>
+      </Box>
+    </>
   );
 }

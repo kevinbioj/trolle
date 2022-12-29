@@ -8,6 +8,7 @@ import { ProjectSettingsModal } from 'components/ProjectSettingsModal';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet';
 
 export default function ProjectPage() {
   const {
@@ -46,6 +47,9 @@ function ProjectView({ project, members, tasks }: ProjectViewProps) {
   const isOwner = user?.username === project.owner.username;
   return (
     <>
+      <Helmet>
+        <title>{project.name} – Trollé</title>
+      </Helmet>
       <Flex
         align="center"
         direction={{ base: 'column', sm: 'row' }}
@@ -55,7 +59,7 @@ function ProjectView({ project, members, tasks }: ProjectViewProps) {
         <Title order={1} weight="normal">
           {project.name}
         </Title>
-        <Flex direction={{ base: 'column', sm: 'row' }} gap="sm">
+        <Flex direction={{ base: 'column', md: 'row' }} gap="sm">
           <Button
             component={Link}
             leftIcon={<IconUsers size={16} />}
