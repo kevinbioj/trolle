@@ -6,6 +6,8 @@ Il s'agit d'une application React peuplée en données par une couche
 applicative Spring Boot (Java).  
 La persistence est assurée par une base de données MariaDB.  
 
+Une version publique est disponible à l'adresse suivante : [https://trolle.kevinbioj.fr](https://trolle.kevinbioj.fr).  
+
 # Installation
 
 L'installation se fait en exécutant le script `install.sh` présent dans le 
