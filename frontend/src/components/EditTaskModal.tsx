@@ -139,7 +139,7 @@ export function EditTaskModal({
           ]}
           label="Affectée à"
           mb="md"
-          placeholder="jdupont"
+          placeholder={editMode ? 'jdupont' : 'Personne'}
           readOnly={!editMode}
           variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('assignee')}
