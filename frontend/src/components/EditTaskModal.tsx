@@ -124,7 +124,7 @@ export function EditTaskModal({
         <Textarea
           label="Description"
           mb="md"
-          placeholder="Le contenu de ma tâche"
+          placeholder={editMode ? '' : 'Aucune'}
           readOnly={!editMode}
           variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('description')}
