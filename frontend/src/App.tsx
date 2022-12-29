@@ -25,7 +25,7 @@ const theme: MantineThemeOverride = {
   components: {
     ActionIcon: {
       defaultProps: {
-        color: '##FA4D6D',
+        color: 'pink',
       },
     },
     Button: {
