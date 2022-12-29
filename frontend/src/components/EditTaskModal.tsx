@@ -64,6 +64,7 @@ export function EditTaskModal({ onClose, project, task }: EditTaskModalProps) {
         queryClient.invalidateQueries([`project_${project.id}_tasks`]);
         onClose();
         showNotification({
+          color: 'green',
           title: 'Tâche mise à jour',
           message: `La tâche ${task.title} a été mise à jour avec succès.`,
         });
@@ -81,6 +82,7 @@ export function EditTaskModal({ onClose, project, task }: EditTaskModalProps) {
       queryClient.invalidateQueries([`project_${project.id}_tasks`]);
       onClose();
       showNotification({
+        color: 'red',
         title: 'Tâche supprimée',
         message: `La tâche ${task.title} a été supprimée avec succès.`,
       });

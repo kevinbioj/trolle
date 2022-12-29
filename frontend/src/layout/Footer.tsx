@@ -4,7 +4,9 @@ export function Footer() {
   return (
     <Box component="footer" my="sm">
       <Text align="center" color="dimmed">
-        Copyright &copy; 2022 - Kevin BIOJOUT - Tous droits réservés.
+        Copyright &copy; 2022 - Tous droits réservés.
+        <br />
+        Kevin BIOJOUT
       </Text>
     </Box>
   );

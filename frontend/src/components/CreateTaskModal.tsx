@@ -43,6 +43,7 @@ export function CreateTaskModal({
       .then((task) => {
         queryClient.invalidateQueries([`project_${project.id}_tasks`]);
         showNotification({
+          color: 'green',
           title: 'Tâche créée',
           message: `La tâche "${task.title}" a été créée avec succès.`,
         });

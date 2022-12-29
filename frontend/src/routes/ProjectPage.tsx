@@ -47,23 +47,23 @@ function ProjectView({ project, tasks }: ProjectViewProps) {
         <Title order={1} weight="normal">
           {project.name}
         </Title>
-        {isOwner && (
-          <Flex direction={{ base: 'column', sm: 'row' }} gap="sm">
-            <Button
-              component={Link}
-              leftIcon={<IconUsers size={16} />}
-              to={`/projects/${project.id}/members`}
-            >
-              Gestion des membres
-            </Button>
+        <Flex direction={{ base: 'column', sm: 'row' }} gap="sm">
+          <Button
+            component={Link}
+            leftIcon={<IconUsers size={16} />}
+            to={`/projects/${project.id}/members`}
+          >
+            Gestion des membres
+          </Button>
+          {isOwner && (
             <Button
               leftIcon={<IconTool size={16} />}
               onClick={() => setOpenedSettings(true)}
             >
               Paramètres du projet
             </Button>
-          </Flex>
-        )}
+          )}
+        </Flex>
       </Flex>
       <ProjectTasks
         columns={project.columns}

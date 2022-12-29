@@ -35,6 +35,7 @@ export function ProjectSettingsModal({
     api.projects.update(project.id, form.values).then((project) => {
       queryClient.invalidateQueries([`project_${project.id}`]);
       showNotification({
+        color: 'green',
         title: 'Projet mis à jour',
         message: `Le projet ${project.name} a été mis à jour avec succès.`,
       });
@@ -44,6 +45,7 @@ export function ProjectSettingsModal({
   const deleteProject = () =>
     api.projects.remove(project.id).then(() => {
       showNotification({
+        color: 'red',
         title: 'Projet supprimé',
         message: `Le projet ${project.name} a été supprimé avec succès.`,
       });
@@ -68,7 +70,7 @@ export function ProjectSettingsModal({
         <Switch
           label="Visible par tout le monde"
           mb="md"
-          {...form.getInputProps('isPublic')}
+          {...form.getInputProps('isPublic', { type: 'checkbox' })}
         />
         <Button fullWidth mb="md" type="submit">
           Sauvegarder

@@ -1,15 +1,15 @@
 import type { Route } from '@tanstack/react-location';
 import { AuthGuard, GuestGuard } from 'core/guards';
 
-const CreateProjectPage = () =>
-  import('./CreateProjectPage').then((p) => (
-    <AuthGuard>
-      <p.default />
-    </AuthGuard>
-  ));
 const HomePage = () => import('./HomePage').then((p) => <p.default />);
 const LoginPage = () =>
   import('./LoginPage').then((p) => (
+    <GuestGuard>
+      <p.default />
+    </GuestGuard>
+  ));
+const RegisterPage = () =>
+  import('./RegisterPage').then((p) => (
     <GuestGuard>
       <p.default />
     </GuestGuard>
@@ -20,19 +20,14 @@ const ProfilePage = () =>
       <p.default />
     </AuthGuard>
   ));
-const ProjectPage = () => import('./ProjectPage').then((p) => <p.default />);
-const RegisterPage = () =>
-  import('./RegisterPage').then((p) => (
-    <GuestGuard>
-      <p.default />
-    </GuestGuard>
-  ));
-const MembersPage = () =>
-  import('./MembersPage').then((p) => (
+const CreateProjectPage = () =>
+  import('./CreateProjectPage').then((p) => (
     <AuthGuard>
       <p.default />
     </AuthGuard>
   ));
+const ProjectPage = () => import('./ProjectPage').then((p) => <p.default />);
+const MembersPage = () => import('./MembersPage').then((p) => <p.default />);
 
 export default [
   { path: '/', element: HomePage },
