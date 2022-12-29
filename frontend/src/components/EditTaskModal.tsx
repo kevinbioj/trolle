@@ -13,12 +13,24 @@ import {
   TextInput,
 } from '@mantine/core';
 import { DatePicker } from '@mantine/dates';
-import { IconTrash } from '@tabler/icons';
+import { IconDeviceFloppy, IconPencil, IconTrash } from '@tabler/icons';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 
-type EditTaskModalProps = { onClose: () => void; project: Project; task: Task };
-export function EditTaskModal({ onClose, project, task }: EditTaskModalProps) {
+type EditTaskModalProps = {
+  onClose: () => void;
+  project: Project;
+  members: Member[];
+  task: Task;
+};
+export function EditTaskModal({
+  onClose,
+  project,
+  members,
+  task,
+}: EditTaskModalProps) {
   const { user } = useAuth();
+  const [editMode, setEditMode] = useState(false);
   const isOwner = user?.username === project.owner.username;
   const form = useForm({
     initialValues: {
@@ -62,7 +74,7 @@ export function EditTaskModal({ onClose, project, task }: EditTaskModalProps) {
       })
       .then(() => {
         queryClient.invalidateQueries([`project_${project.id}_tasks`]);
-        onClose();
+        setEditMode(false);
         showNotification({
           color: 'green',
           title: 'Tâche mise à jour',
@@ -96,71 +108,96 @@ export function EditTaskModal({ onClose, project, task }: EditTaskModalProps) {
       closeButtonLabel="Fermer la tâche"
       onClose={onClose}
       opened={!!task}
-      title={`Éditer la tâche ${task.title}`}
+      title={`Tâche ${task.title}`}
       withCloseButton
     >
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <TextInput
-          disabled={!editable}
           label="Titre"
           mb="md"
           placeholder="Ma superbe tâche"
-          withAsterisk
+          readOnly={!editMode}
+          variant={editMode ? 'default' : 'unstyled'}
+          withAsterisk={editMode}
           {...form.getInputProps('title')}
         />
         <Textarea
-          disabled={!editable}
           label="Description"
           mb="md"
           placeholder="Le contenu de ma tâche"
+          readOnly={!editMode}
+          variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('description')}
         />
-        <TextInput
-          disabled={
-            user === null ||
-            (task.assignee != null &&
-              (task.assignee?.user.username !== user?.username || !editable))
-          }
+        <Select
+          data={[
+            { label: 'Personne', value: '' },
+            ...members.map((m) => ({
+              label: m.user.displayName,
+              value: m.user.username,
+            })),
+          ]}
           label="Affectée à"
           mb="md"
           placeholder="jdupont"
+          readOnly={!editMode}
+          variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('assignee')}
         />
         <Select
-          disabled={!editable}
           label="Colonne"
           data={project.columns.map((c) => ({
             label: c.name,
             value: `${c.id}`,
           }))}
           mb="md"
+          readOnly={!editMode}
+          variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('column')}
         />
         <DatePicker
           allowFreeInput
-          disabled={!editable}
           inputFormat="DD/MM/YYYY"
           label="Date limite de réalisation"
           locale="fr"
           mb="md"
           placeholder={dayjs().format('DD/MM/YYYY')}
+          readOnly={!editMode}
+          variant={editMode ? 'default' : 'unstyled'}
           {...form.getInputProps('dueDate')}
         />
-        <Button disabled={!editable} fullWidth mb="md" type="submit">
-          Mettre à jour
-        </Button>
-        {isOwner && (
+        {editMode && (
           <Button
-            color="red"
             fullWidth
-            leftIcon={<IconTrash size={16} />}
+            leftIcon={<IconDeviceFloppy size={16} />}
             mb="md"
-            onClick={deleteTask}
+            type="submit"
           >
-            Supprimer la tâche
+            Sauvegarder
           </Button>
         )}
       </form>
+      {!editMode && editable && (
+        <Button
+          fullWidth
+          leftIcon={<IconPencil size={16} />}
+          mb="md"
+          onClick={() => setEditMode(true)}
+        >
+          Modifier
+        </Button>
+      )}
+      {isOwner && editMode && (
+        <Button
+          color="red"
+          fullWidth
+          leftIcon={<IconTrash size={16} />}
+          mb="md"
+          onClick={deleteTask}
+        >
+          Supprimer la tâche
+        </Button>
+      )}
       <Text align="center" color="dimmed">
         Dernière mise à jour il y a {dayjs(task.updatedAt).toNow(true)}.<br />
         Crée le {dayjs(task.createdAt).format('LLLL')}.

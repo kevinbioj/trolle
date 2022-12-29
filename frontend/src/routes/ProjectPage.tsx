@@ -19,19 +19,27 @@ export default function ProjectPage() {
     queryKey: [`project_${id}`],
     queryFn: () => api.projects.get(id),
   });
+  const members = useQuery({
+    queryFn: () => api.members.get(id),
+    queryKey: [`project_${id}_members`],
+  });
   const tasks = useQuery({
     enabled: project.isSuccess,
     queryKey: [`project_${id}_tasks`],
     queryFn: () => api.tasks.fromProject(project.data!.id),
   });
 
-  return project.data && tasks.data ? (
-    <ProjectView project={project.data} tasks={tasks.data} />
+  return project.data && members.data && tasks.data ? (
+    <ProjectView
+      project={project.data}
+      members={members.data}
+      tasks={tasks.data}
+    />
   ) : null;
 }
 
-type ProjectViewProps = { project: Project; tasks: Task[] };
-function ProjectView({ project, tasks }: ProjectViewProps) {
+type ProjectViewProps = { project: Project; members: Member[]; tasks: Task[] };
+function ProjectView({ project, members, tasks }: ProjectViewProps) {
   const { user } = useAuth();
   const [openedTask, setOpenedTask] = useState<Task | null>(null);
   const [openedSettings, setOpenedSettings] = useState(false);
@@ -75,6 +83,7 @@ function ProjectView({ project, tasks }: ProjectViewProps) {
         <EditTaskModal
           onClose={() => setOpenedTask(null)}
           project={project}
+          members={members}
           task={openedTask}
         />
       )}

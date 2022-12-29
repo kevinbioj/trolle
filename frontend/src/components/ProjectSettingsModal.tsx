@@ -1,7 +1,7 @@
 import { Button, Modal, Switch, TextInput } from '@mantine/core';
 import { useForm, yupResolver } from '@mantine/form';
 import { showNotification } from '@mantine/notifications';
-import { IconTrash } from '@tabler/icons';
+import { IconDeviceFloppy, IconTrash } from '@tabler/icons';
 import { useNavigate } from '@tanstack/react-location';
 import { useQueryClient } from '@tanstack/react-query';
 import * as api from 'core/api';
@@ -72,7 +72,12 @@ export function ProjectSettingsModal({
           mb="md"
           {...form.getInputProps('isPublic', { type: 'checkbox' })}
         />
-        <Button fullWidth mb="md" type="submit">
+        <Button
+          fullWidth
+          leftIcon={<IconDeviceFloppy size={16} />}
+          mb="md"
+          type="submit"
+        >
           Sauvegarder
         </Button>
       </form>

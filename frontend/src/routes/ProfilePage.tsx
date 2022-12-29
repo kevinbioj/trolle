@@ -1,6 +1,6 @@
 import { Alert, Button, Container, TextInput, Title } from '@mantine/core';
 import { useForm, yupResolver } from '@mantine/form';
-import { IconAlertCircle } from '@tabler/icons';
+import { IconAlertCircle, IconDeviceFloppy } from '@tabler/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import * as api from 'core/api';
 import { useAuth } from 'core/providers';
@@ -67,10 +67,11 @@ export default function ProfilePage() {
           <Button
             disabled={form.values.displayName === user!.displayName}
             fullWidth
+            leftIcon={<IconDeviceFloppy size={16} />}
             mb="xs"
             type="submit"
           >
-            Mettre à jour
+            Sauvegarder
           </Button>
         </form>
       </Container>

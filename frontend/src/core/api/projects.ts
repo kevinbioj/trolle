@@ -6,7 +6,7 @@ interface UpdateProjectData {
 }
 
 export const create = (name: string, columns: string[]) =>
-  api<Project, any>('/projects', {
+  api<Project, { name: string; columns: string[] }>('/projects', {
     body: { name, columns },
   });
 
